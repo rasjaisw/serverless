@@ -1,0 +1,227 @@
+service: ReadDataServerless
+#custom:
+#  envfile: ${file(./config/config-${opt:stage}.yml)}
+provider:
+  name: aws
+  runtime: java8
+#  region: ${opt:region}
+  versionFunctions: false
+#  deploymentBucket:
+#    name: ${opt:serverlessBucketName}
+#  timeout: 30
+#  endpointType: regional
+#  vpc:
+#    securityGroupIds:
+#    - ${opt:lambdaSecurityGroup}
+#    subnetIds:
+#    - ${opt:privateSubnet0}
+#    - ${opt:privateSubnet1}
+#    - ${opt:privateSubnet2}
+#  environment:
+#       SESSION_TIME_OUT : ${self:custom.envfile.sessionTimeOut}
+#       CACHE_SERVICE_ENDPOINT: ${opt:cacheEndpoint}
+#       CACHE_SERVICE_PORT: ${opt:cachePort}
+#       OKTA_INTERNAL_ISSUER_URL: ${self:custom.envfile.oktaInternalIssuerUrl}
+#       OKTA_INTERNAL_CLIENT_ID: ${self:custom.envfile.oktaInternalClientID}
+#       OKTA_ISSUER_URL: ${self:custom.envfile.oktaIssuerUrl}
+#       OKTA_CLIENT_ID: ${self:custom.envfile.oktaClientID}
+#       AWS_RDS_DBURL: ${opt:rdsURL} 
+#       AWS_RDS_USER_NAME: ${opt:rdsUser}
+#       AWS_RDS_PASSWORD: ${opt:rdsPassword}
+#       BUILD_ID: ${opt:awsUserServiceBuildID}
+#       AWS_RDS_SCHEMA: ${opt:rdsSchema}
+#       OKTA_USER_CREATE : ${self:custom.envfile.oktaUserCreate}
+#       OKTA_GROUP_NAME : ${self:custom.envfile.oktaGroupName}
+#       OKTA_SSWS : ${self:custom.envfile.oktassws}
+#       OKTA_BASE_URL : ${self:custom.envfile.oktaBaseURL} 
+#       OKTA_CALLBACK : ${self:custom.envfile.okta_callback}
+#       AUCTION_START_DATE_FOR_INTERNAL_USER : ${self:custom.envfile.auctionStartDateForInternalUser}   
+#       FLOOR_PLAN_DAYS_FOR_INTERNAL_USER : ${self:custom.envfile.floorPlanDayForInternalUser}   
+#       DEFAULT_MAX_SEARCH_RESULTS_FOR_INTERNAL_USER : ${self:custom.envfile.defaultMaxSearchResultsForInternalUser}
+#       SENTRY_DSN: ${self:custom.envfile.sentryDsn}   
+#       ENABLED_SENTRY: ${self:custom.envfile.enabledSentry}      
+package:
+  artifact: build/distributions/ReadDataServerless.zip
+  
+functions:
+  readData:
+    handler: com.cg.sls.handler.ReadDataHandler
+    name: ReadData-Microservice
+    timeout: 29
+  writeData:
+    handler: com.cg.sls.handler.WriteDataHandler
+    name: WriteData-Microservice
+    timeout: 29
+stepFunctions:
+  stateMachines:
+    readwritestepfunc:
+      events:
+       - http:
+          path: readData
+          method: post
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:us-east-1:875931801955:userpool/us-east-1_7rCy8TiSk
+      definition:
+        Comment: "A serverless application"
+        StartAt: ReadDataHandler
+        States:
+          ReadDataHandler:
+            Type: Task
+            Resource: "arn:aws:lambda:us-east-1:875931801955:function:ReadData-Microservice"
+            Next: WriteDataHandler
+          WriteDataHandler:
+            Type: Task
+            Resource: "arn:aws:lambda:us-east-1:875931801955:function:WriteData-Microservice"
+            End: true
+plugins:
+  - serverless-step-functions
+#- serverless-pseudo-parameters
+#    - schedule:
+#          name: 'AFC-Add-User-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'    
+#  updateUser:
+#    handler: com.afc.user.handler.UpdateUserHandler
+#    name: AFC-Update-User-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: updateUser
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-Update-User-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'        
+#  ACS:
+#    handler: com.afc.user.handler.ACSRequestHandler
+#    name: AFC-ACS-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: ACS
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-ACS-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'    
+#  forgotPassword:
+#    handler: com.afc.user.handler.ForgotPasswordHandler
+#    name: AFC-forgotPassword-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: forgotPassword
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-forgotPassword-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'        
+#  auctions:
+#    handler: com.afc.user.handler.GetAuctionListHandler
+#    name: AFC-AuctionList-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: auctions
+#        method: get
+#        cors: true
+#    - schedule:
+#          name: 'AFC-AuctionList-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'    
+#  checkUserId:
+#    handler: com.afc.user.handler.CheckUserIdAvailabilityHandler
+#    name: AFC-CheckUserIdAvailability-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: checkUserId
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-CheckUserIdAvailability-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'    
+#  updatePermission:
+#    handler: com.afc.user.handler.UpdatePermissionHandler
+#    name: AFC-UpdatePermission-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: updatePermission
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-UpdatePermission-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'         
+#  oktaLogout:
+#    handler: com.afc.user.handler.OktaForgotPasswordHandler
+#    name: AFC-OktaUserForgotPassword-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: oktaForgotPassword
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-OktaUserForgotPassword-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'        
+#  impersonateUser:
+#    handler: com.afc.user.handler.ImpersonateUserHandler
+#    name: AFC-ImpersonateUser-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: impersonateUser
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-ImpersonateUser-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'         
+#  updateUserAuctions:
+#    handler: com.afc.user.handler.UpdateUserAuctionsHandler
+#    name: AFC-updateUserAuctions-Microservice
+#    timeout: 29
+#    events:
+#    - http:
+#        path: updateUserAuctions
+#        method: post
+#        cors: true
+#    - schedule:
+#          name: 'AFC-updateUserAuctions-Microservice'
+#          rate: rate(5 minutes)
+#          enabled: true
+#          input: '{"body": "WarmUpRequest"}'         
+resources:
+  Resources:
+    AWSLambdaVPCAccessExecutionRole:
+      Type: AWS::IAM::ManagedPolicy
+      Properties:
+        Description: Creating policy for vpc connetion.
+        Roles:
+        - Ref: IamRoleLambdaExecution
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
+            Resource: '*' 

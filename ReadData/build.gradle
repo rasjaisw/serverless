@@ -1,0 +1,116 @@
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+//apply plugin: 'org.sonarqube' 
+apply plugin: 'jacoco'
+
+repositories {
+   mavenLocal()
+   	jcenter()
+	mavenCentral()
+}
+
+dependencies {
+
+     compile       'com.google.code.gson:gson:2.6.2'
+     compile       'redis.clients:jedis:2.9.0'
+     compile       'com.amazonaws:aws-lambda-java-core:1.1.0'
+     compile       'com.amazonaws:aws-lambda-java-log4j:1.0.0'
+     compile       'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
+     compile       'commons-codec:commons-codec:1.11'
+
+	 compile 'org.json:json:20180813'
+	 compile 'com.fasterxml.jackson.core:jackson-core:2.9.4'
+	 compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+	 compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.4'
+	 compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.9.0'
+	 compile  'org.springframework:spring-core:4.3.9.RELEASE'
+     compile  'org.springframework:spring-context:4.3.9.RELEASE'
+     compile  'org.springframework:spring-beans:4.3.9.RELEASE'
+     compile  'org.springframework:spring-web:4.3.9.RELEASE'     
+     compile  'ma.glasnost.orika:orika-core:1.4.3'
+     compile  'com.amazonaws:aws-lambda-java-core:1.1.0'
+     compile  'com.amazonaws:aws-java-sdk-s3:1.11.321'
+     compile  'com.amazonaws:aws-java-sdk-dynamodb:1.11.417'
+     
+     compile  'com.okta.jwt:okta-jwt-verifier:0.2.0'
+     compile  'com.sun.mail:javax.mail:1.6.0'
+     compile  'com.amazonaws:aws-lambda-java-log4j:1.0.0'
+     compile  'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'	
+     compile  'io.sentry:sentry-log4j2:1.7.5'
+    // compile  'com.cg.framework:AFC-Framework:1.0'
+     compile  'org.postgresql:postgresql:42.1.4'
+     compile 'ma.glasnost.orika:orika-core:1.4.3'
+     testImplementation  'org.hamcrest:hamcrest-core:1.3'
+     testImplementation  'org.hamcrest:hamcrest-library:1.3'
+     testImplementation  'org.mockito:mockito-core:1.9.+'
+     testImplementation 'junit:junit:4.12'
+}
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    //classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4"
+    //classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2" 
+  }
+}
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+    }
+}
+
+//apply plugin: "info.solidsoft.pitest"
+
+
+
+// Task for building the zip file for upload
+task buildZip(type: Zip) {
+    // Using the Zip API from gradle to build a zip file of all the dependencies
+    //
+    // The path to this zip file can be set in the serverless.yml file for the
+    // package/artifact setting for deployment to the S3 bucket
+    //
+    // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+
+    // set the base name of the zip file
+    baseName = "ReadDataServerless"
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+
+/*pitest {
+    targetClasses = ['com.cg.user.bussinessobject.*','com.cg.user.constant.*','com.cg.user.delegate.*','com.cg.user.external.service.*','com.cg.user.handler.*','com.cg.user.mapper.*','com.cg.user.okta.error.*','com.cg.user.okta.group.*','com.cg.user.okta.service.*','com.cg.user.okta.user.*','com.cg.user.request.*','com.cg.user.response.*','com.cg.user.token.*','com.cg.user.transferobject.*','com.cg.user.validator.*']
+    // threads = 4
+    threads = 2
+    // jvmArgs = ['-Xmx2048m']
+    outputFormats = ['HTML']
+    timestampedReports = false
+    excludedMethods = ['capture','recordBreadCrumb']
+}*/
+
+build.dependsOn buildZip
+//buildZip.dependsOn 'pitest'
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}

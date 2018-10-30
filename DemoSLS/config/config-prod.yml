@@ -1,0 +1,35 @@
+# prod env properties
+sessionTimeOut : 30
+#Redis Elastic-Cache details
+cacheServiceEndpoint: afc-ca-fenr8uambcv3.ldv0tv.0001.use2.cache.amazonaws.com
+cacheServicePort: 6379
+#Internal Okta Details
+oktaInternalIssuerUrl: https://karauctionservices.okta.com
+oktaInternalClientID: 0oaj1jmzqttgLdyaZ0x7
+#External Okta details
+oktaIssuerUrl: https://karportal.okta.com/oauth2/default
+oktaClientID: 0oatjwfhkhl6lMCTa2p6
+oktaBaseURL : https://karportal.okta.com/api/v1
+oktaUserList : users
+oktaUserCreate : users?activate=false
+oktaGroupName : AFCAuctionPortal
+oktassws : 00XqpVBsHVnH6rBy09naR36EevNMZ02tSLV-TykaSh
+okta_callback : http://www.floorwithafc.com/implicit/callback
+#RDS Details
+awsRdsDbUrl: jdbc:postgresql://afc-aurorapostgres-prod.czlajg9yjrnj.us-east-2.rds.amazonaws.com:5432/afc_AuroraPostgres_prod
+awsRdsUser: AfcProd
+awsRdsSchema: AFCRDS_PRD
+#App defaults
+auctionStartDateForInternalUser : 2018-01-01
+floorPlanDayForInternalUser : 30
+defaultMaxSearchResultsForInternalUser : 1000
+#AWS Infra Details
+slsBucketName: afc-prod-us-east-2-serverless-back-end
+securityGroup: sg-e493e58f
+subnet1: subnet-4128ab29
+subnet2: subnet-619a601b
+subnet3: subnet-546c5d19
+#Sentry Details
+#sentryDsn: https://a95c12d957e34dd7a99e306013b2559e:493151bc38144043819012c8aab325da@sentry.io/301915
+sentryDsn: https://a09e07412d2d44b59a7bf10abadbc816@sentry.io/1216540
+enabledSentry: true

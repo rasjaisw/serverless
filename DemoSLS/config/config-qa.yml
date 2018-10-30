@@ -1,0 +1,28 @@
+# qa env properties
+sessionTimeOut : 30
+cacheServiceEndpoint: afc-ca-1t0iixosnztmg.gotrxm.0001.use2.cache.amazonaws.com
+cacheServicePort: 6379
+oktaInternalIssuerUrl: https://dev-582429.oktapreview.com
+oktaInternalClientID: 0oae5haf9u25hRI0l0h7
+oktaIssuerUrl: https://dev-582429.oktapreview.com/oauth2/default
+oktaClientID: 0oadsxtbd2bMpkUdV0h7
+oktaBaseURL : https://dev-582429.oktapreview.com/api/v1
+oktaUserList : users
+oktaUserCreate : users?activate=false
+oktaGroupName : AuctionPortalExt
+oktassws : 00pQaR-E_Iq5_HZvUnbldlC_x91TDdVRDpS9Gkv8ra
+okta_callback : http://qa.floorwithafc.com/implicit/callback
+awsRdsDbUrl: jdbc:postgresql://afc-aurorapostgres-qa.cohksbeuu2oc.us-east-2.rds.amazonaws.com:5432/afc_AuroraPostgres_qa
+awsRdsUser: AfcQA
+awsRdsSchema: AFCRDS_QA
+auctionStartDateForInternalUser : 2018-01-01
+floorPlanDayForInternalUser : 30
+defaultMaxSearchResultsForInternalUser : 1000
+slsBucketName: afc-qa-us-east-2-serverless-back-end
+securityGroup: sg-0d04e466
+subnet1: subnet-12aee75f
+subnet2: subnet-f6f1219e
+subnet3: subnet-1b415460
+#sentryDsn: https://0735a6e636ae4feb99baf25f7c4ea2ec:b1074bddbbcf48739f78eec3e7168378@sentry.io/300947
+sentryDsn: https://a09a72113ef445739a6fc0143f39ff0f@sentry.io/1216537
+enabledSentry: true
