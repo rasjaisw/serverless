@@ -1,0 +1,124 @@
+UNIX ASSIGNMENT 
+
+Assignment-1 
+
+
+1. Write a shell script to calculate simple interest. 
+
+#!/bin/bash
+
+echo "Enter Principle : "
+read p
+
+echo "Enter Rate of Interest"
+read r
+
+echo "Enter Time: "
+read n
+
+i=` expr $p \* $r \* $n `
+i=` expr $i / 100 `
+
+echo "Simple Interest is: $i "
+
+
+
+2. Write a shell script to calculate salary from given basic. 
+
+Salary = basic + dp + da +hra +ma –pf 
+basic – to be taken as input 
+dp - 50 % of basic 
+da - 35 % of (basic + dp) 
+hra - 8 % of (basic + dp) 
+ma - 3 % of (basic + dp) 
+pf - 10% of (basic + dp) 
+
+#!/bin/bash
+
+echo "Enter the basic: "
+read basic
+echo $basic
+
+dp=`expr $basic \* 50 / 100|bc`
+
+da=`expr $(expr $basic + $dp)  \* 35 / 100|bc`
+
+hra=`expr $(expr $basic + $dp) \* 8 / 100|bc`
+
+ma=`expr $(expr $basic + $dp) \* 3 / 100|bc`
+
+pf=` expr $(expr $basic + $dp) \* 10 / 100|bc`
+
+salary=`expr $basic + $dp + $da + $hra + $ma - $pf|bc`
+
+echo "Salary is $salary"
+
+
+3. Write a shell script to calculate the average of a set of N number. 
+
+#!/bin/bash
+
+echo "Enter Size(N)"
+read N
+
+i=1
+sum=0
+
+echo "Enter Numbers"
+while [ $i -le $N ]
+do
+  read num                  #get number
+  sum=`expr $sum + $num`     #sum+=num
+  i=`expr $i + 1`
+done
+
+avg=`expr $sum / $N | bc -l`
+
+echo "Average is $avg"
+
+
+4. Write a Unix shell script to find the sum of number to given number. 
+
+#!/bin/bash
+
+echo "Enter Number"
+read N
+
+i=1
+sum=0
+
+while [ $i -le $N ]
+do
+  sum=$((sum + i)) #sum+=num
+  i=$((i + 1))
+done
+
+echo "The sum is $sum"
+
+
+e.g. if entered number is 5 then 1+2+3+4+5 
+
+
+5. Write a shell script to perform like calculator. It should ask for the number and operand from the user. 
+#! /bin/bash
+
+echo "Welcome! Please enter two numbers"
+read num1 num2
+echo "Choose the operation you want to perform:
+		1.Add
+		2.Subtract
+		3.Multiply
+		4.Divide"
+read choice
+
+case $choice in 
+	"1" )
+			echo "The sum is : $((num1+num2))" ;;
+	"2" )
+			echo "The diffrence is : $((num1-num2))" ;;
+	"3" )
+			echo "The product is : $((num1*num2))" ;;
+	"4" )
+			echo "The result is : $((num1/num2))" ;;
+esac
+
